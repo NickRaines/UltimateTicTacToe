@@ -3,20 +3,28 @@ class UTTT:
         """
         Initializing the UTTT variable to the default settings
 
+        game_grid: An array of length 9 holding an array of length 9 in each index representing the whole game grid
+        simplified_grid: An array of length 9 holding the value of which player has won the corresponding board (0 if not won yet)
+        active_board: Which board valid moves are limited to given the previous move (None if no limitations)
+        winner: player that has won the game (0 if no one has won yet)
+        player_turn: which player's turn it is to act
+
         """
         self.game_grid = [[0] * 9 for _ in range(9)]
+        self.simplified_grid = [0] * 9
         self.active_board = None
         self.winner = 0
         self.player_turn = 1
         # self.valid_moves = get_valid_moves()
         # Thought about calculating valid_moves for the next move after every move and storing in UTTT object
 
-    def __init__(self, game_grid, active_board, winner, player_turn):
+    def __init__(self, game_grid, simplified_grid, active_board, winner, player_turn):
         """
         Initializing the UTTT variable given each variable
 
         """
         self.game_grid = game_grid
+        self.simplified_grid = simplified_grid
         self.active_board = active_board
         self.winner = winner
         self.player_turn = player_turn
@@ -35,15 +43,20 @@ class UTTT:
         
         valid_moves = []
         if self.active_board is None:
-            for board in range(len(self.game_grid)):
-                for cell in range(9):
-                    if self.game_grid[board][cell] == 0:
-                        valid_moves.append((board, cell))
+            for board, winner in enumerate(self.simplified_grid):
+                if (winner == 0):
+                    for cell in range(9):
+                        if self.game_grid[board][cell] == 0:
+                            valid_moves.append((board, cell))
         else:
             for cell in range(9):
                 if self.game_grid[self.active_board][cell] == 0:
                     valid_moves.append((self.active_board, cell))
+
         return valid_moves
+    
+    # to check if there is a draw, use this conditional:
+    # if len(valid_moves) == 0 and self.winner == 0:
 
     def make_move(self, board, cell, valid_moves):
         """
@@ -60,10 +73,13 @@ class UTTT:
         """
         if (board, cell) in valid_moves:
             self.game_grid[board][cell] = self.player_turn
-            if self.check_win(board, self.player_turn):
-                self.winner = self.player_turn
+            if self.check_board_win(board, self.player_turn):
+                self.simplified_grid[board] = self.player_turn
+                if (self.check_board_win(self.simplified_grid, self.player_turn)):
+                    self.winner = self.player_turn
+                    return True # technically not necessary
             # make the current board the same as the cell if that board has any free spaces, otherwise place no restriction
-            self.active_board = cell if 0 in self.game_grid[cell] else None
+            self.active_board = cell if (self.simplified_grid[cell] == 0 and 0 in self.game_grid[cell]) else None
             self.player_turn = 3 - self.player_turn
             return True
         return False
@@ -84,11 +100,11 @@ class UTTT:
             UTTT: The new UTTT generated from the given move
 
         """
-        next_game_state = UTTT(self.game_grid.copy(), self.active_board, self.winner, self.player_turn)
+        next_game_state = UTTT(self.game_grid.copy(), self.simplified_grid, self.active_board, self.winner, self.player_turn)
         next_game_state.make_move(board, cell, valid_moves)
         return next_game_state
 
-    def check_win(self, board, player):
+    def check_board_win(self, board, player):
         """
         Checks to see if a given player has won the given board (therefore winning them the game)
 
