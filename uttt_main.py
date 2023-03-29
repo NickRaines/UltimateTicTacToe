@@ -1,30 +1,28 @@
 class UTTT:
-    def __init__(self):
+    def __init__(self, game_grid=None, simplified_grid=None, active_board=None, winner=0, player_turn=1):
         """
-        Initializing the UTTT variable to the default settings
+        Initializes the UTTT variable.
 
-        game_grid: An array of length 9 holding an array of length 9 in each index representing the whole game grid
-        simplified_grid: An array of length 9 holding the value of which player has won the corresponding board (0 if not won yet)
-        active_board: Which board valid moves are limited to given the previous move (None if no limitations)
-        winner: player that has won the game (0 if no one has won yet)
-        player_turn: which player's turn it is to act
+        If no arguments are provided, the UTTT variable is initialized to default settings.
 
+        If arguments are provided, the UTTT variable is initialized given each variable.
+
+        :param game_grid: An array of length 9 holding an array of length 9 in each index representing the whole game grid
+        :param simplified_grid: An array of length 9 holding the value of which player has won the corresponding board (0 if not won yet)
+        :param active_board: Which board valid moves are limited to given the previous move (None if no limitations)
+        :param winner: player that has won the game (0 if no one has won yet)
+        :param player_turn: which player's turn it is to act
         """
-        self.game_grid = [[0] * 9 for _ in range(9)]
-        self.simplified_grid = [0] * 9
-        self.active_board = None
-        self.winner = 0
-        self.player_turn = 1
-        # self.valid_moves = get_valid_moves()
-        # Thought about calculating valid_moves for the next move after every move and storing in UTTT object
+        if game_grid is None:
+            self.game_grid = [[0] * 9 for _ in range(9)]
+        else:
+            self.game_grid = game_grid
 
-    def __init__(self, game_grid, simplified_grid, active_board, winner, player_turn):
-        """
-        Initializing the UTTT variable given each variable
+        if simplified_grid is None:
+            self.simplified_grid = [0] * 9
+        else:
+            self.simplified_grid = simplified_grid
 
-        """
-        self.game_grid = game_grid
-        self.simplified_grid = simplified_grid
         self.active_board = active_board
         self.winner = winner
         self.player_turn = player_turn
