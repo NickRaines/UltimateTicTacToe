@@ -36,10 +36,9 @@ class UTTT:
         valid_moves = []
         if self.active_board is None:
             for board in range(len(self.game_grid)):
-                if self.game_grid[board] == 0:
-                    for cell in range(9):
-                        if self.game_grid[board][cell] == 0:
-                            valid_moves.append((board, cell))
+                for cell in range(9):
+                    if self.game_grid[board][cell] == 0:
+                        valid_moves.append((board, cell))
         else:
             for cell in range(9):
                 if self.game_grid[self.active_board][cell] == 0:
