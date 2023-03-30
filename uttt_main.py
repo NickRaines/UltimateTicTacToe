@@ -1,5 +1,5 @@
 class UTTT:
-    def __init__(self, game_grid=None, simplified_grid=None, active_board=None, winner=0, player_turn=1):
+    def __init__(self, game_grid=None, simplified_grid=None, active_board=None, valid_moves=None, winner=0, player_turn=1):
         """
         Initializes the UTTT variable.
 
@@ -13,6 +13,11 @@ class UTTT:
         :param winner: player that has won the game (0 if no one has won yet)
         :param player_turn: which player's turn it is to act
         """
+
+        self.active_board = active_board
+        self.winner = winner
+        self.player_turn = player_turn
+
         if game_grid is None:
             self.game_grid = [[0] * 9 for _ in range(9)]
         else:
@@ -23,9 +28,14 @@ class UTTT:
         else:
             self.simplified_grid = simplified_grid
 
-        self.active_board = active_board
-        self.winner = winner
-        self.player_turn = player_turn
+        if valid_moves is None:
+            self.valid_moves = self.get_valid_moves()
+        else:
+            self.valid_moves = valid_moves
+
+        
+        # I want to make valid_moves live in the object and get updated in make_move()
+        
 
     def get_valid_moves(self):
         """
@@ -56,7 +66,7 @@ class UTTT:
     # to check if there is a draw, use this conditional:
     # if len(valid_moves) == 0 and self.winner == 0:
 
-    def make_move(self, board, cell, valid_moves):
+    def make_move(self, board, cell):
         """
         Updates the UTTT object according to the move made
 
@@ -69,7 +79,7 @@ class UTTT:
             Boolean: Returns true if the move is valid and false otherwise
 
         """
-        if (board, cell) in valid_moves:
+        if (board, cell) in self.valid_moves:
             self.game_grid[board][cell] = self.player_turn
             if self.check_board_win(board, self.player_turn):
                 self.simplified_grid[board] = self.player_turn
@@ -79,13 +89,15 @@ class UTTT:
             # make the current board the same as the cell if that board has any free spaces, otherwise place no restriction
             self.active_board = cell if (self.simplified_grid[cell] == 0 and 0 in self.game_grid[cell]) else None
             self.player_turn = 3 - self.player_turn
+
+            self.valid_moves = self.get_valid_moves()
             return True
         return False
     
 
     # This assume the move you are making is valid and not take in valid_moves as an input. Therefore the validity of the move MUST be checked before the function is called
     # If it is better for this to be changed to self validate the moves, how should I handle an invalid move?
-    def generate_next_uttt(self, board, cell, valid_moves):
+    def generate_next_uttt(self, board, cell):
         """
         Generates the next UTTT object given that the 
 
@@ -98,8 +110,8 @@ class UTTT:
             UTTT: The new UTTT generated from the given move
 
         """
-        next_game_state = UTTT(self.game_grid.copy(), self.simplified_grid, self.active_board, self.winner, self.player_turn)
-        next_game_state.make_move(board, cell, valid_moves)
+        next_game_state = UTTT(self.game_grid.copy(), self.simplified_grid, self.active_board, self.valid_moves, self.winner, self.player_turn)
+        next_game_state.make_move(board, cell)
         return next_game_state
 
     def check_board_win(self, board, player):
@@ -125,6 +137,19 @@ class UTTT:
                 (b[2] == b[5] == b[8] == player) or
                 (b[0] == b[4] == b[8] == player) or
                 (b[2] == b[4] == b[6] == player))
+    
+    def print_board(self):
+        print()
+        rows = []
+        for i in range(0, 9, 3):
+            for j in range(0, 9, 3):
+                sub_rows = []
+                for k in range(3):
+                    sub_rows.append(str(self.game_grid[i+k][j:j+3]))
+                rows.append(" ".join(sub_rows))
+            if i != 6:
+                rows.append("---------+---------+---------")
+        print("\n".join(rows))
     
 
 
