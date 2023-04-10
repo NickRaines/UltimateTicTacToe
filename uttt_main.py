@@ -1,3 +1,6 @@
+import copy
+
+
 class UTTT:
     def __init__(self, game_grid=None, simplified_grid=None, active_board=None, valid_moves=None, winner=0, player_turn=1):
         """
@@ -83,9 +86,12 @@ class UTTT:
             self.game_grid[board][cell] = self.player_turn
             if self.check_board_win(board, self.player_turn):
                 self.simplified_grid[board] = self.player_turn
-                if (self.check_board_win(self.simplified_grid, self.player_turn)):
+
+                # INPUTTING -1 AS THE BOARD NUMBER CHECKS THE SIMPLIFIED BOARD TO SEE IF SOMEONE WON THE FULL GAME
+                if (self.check_board_win(-1, self.player_turn)):
                     self.winner = self.player_turn
                     return True # technically not necessary
+                
             # make the current board the same as the cell if that board has any free spaces, otherwise place no restriction
             self.active_board = cell if (self.simplified_grid[cell] == 0 and 0 in self.game_grid[cell]) else None
             self.player_turn = 3 - self.player_turn
@@ -110,7 +116,7 @@ class UTTT:
             UTTT: The new UTTT generated from the given move
 
         """
-        next_game_state = UTTT(self.game_grid.copy(), self.simplified_grid, self.active_board, self.valid_moves, self.winner, self.player_turn)
+        next_game_state = UTTT(copy.deepcopy(self.game_grid), self.simplified_grid, self.active_board, self.valid_moves, self.winner, self.player_turn)
         next_game_state.make_move(board, cell)
         return next_game_state
 
@@ -119,7 +125,7 @@ class UTTT:
         Checks to see if a given player has won the given board (therefore winning them the game)
 
         Args:
-            board (int) : The board that the player may have won
+            board (int) : The board that the player may have won **IF -1 THEN SIMPLIFIED BOARD**
             player (int) : The player that you are checking if they won
 
         Returns:
@@ -128,7 +134,12 @@ class UTTT:
         """
         # I was thinking about adding this variable: winning_combinations = [{0,1,2}, {3,4,5}, {6,7,8}, {0,3,6}, {1,4,7}, {2,5,8}, {0,4,8}, {2,4,6}]
         # and using that to short hand the return statement but couldn't find a way
-        b = self.game_grid[board]
+
+        if board == -1: 
+            b = self.simplified_grid 
+        else: 
+            b = self.game_grid[board]
+        
         return ((b[0] == b[1] == b[2] == player) or
                 (b[3] == b[4] == b[5] == player) or
                 (b[6] == b[7] == b[8] == player) or
