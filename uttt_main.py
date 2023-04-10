@@ -64,6 +64,17 @@ class UTTT:
                 if self.game_grid[self.active_board][cell] == 0:
                     valid_moves.append((self.active_board, cell))
 
+        if len(valid_moves) == 0:
+            count_1 = sum(1 for mark in self.simplified_grid if mark == 1)
+            count_2 = sum(1 for mark in self.simplified_grid if mark == 2)
+
+            if count_1 > count_2:
+                self.winner = 1
+            elif count_2 > count_1:
+                self.winner = 2
+            else:
+                self.winner = -1
+            
         return valid_moves
     
     # to check if there is a draw, use this conditional:
