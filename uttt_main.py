@@ -169,7 +169,7 @@ class UTTT:
             for j in range(0, 9, 3):
                 sub_rows = []
                 for k in range(3):
-                    sub_rows.append(str(self.game_grid[i+k][j:j+3]))
+                    sub_rows.append(str(self.game_grid[i+k][j:j+3]).replace('0', '_').replace('1', 'X').replace('2', 'O'))
                 rows.append(" ".join(sub_rows))
             if i != 6:
                 rows.append("---------+---------+---------")
