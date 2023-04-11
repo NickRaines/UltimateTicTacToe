@@ -87,6 +87,7 @@ class TestUTTT(unittest.TestCase):
                           [1,2,1,1,2,2,2,1,1]]
         
         game.make_move(0,0)
+        game.print_board()
         self.assertEqual(game.winner, -1)
 
     def test_end_game_won_game(self):
@@ -103,6 +104,21 @@ class TestUTTT(unittest.TestCase):
         
         game.make_move(0,0)
         self.assertEqual(game.winner, 1)
+
+    def test_end_game_not_won_game(self):
+        game = UTTT()
+        game.game_grid = [[0,0,1,1,2,2,2,1,1],
+                          [1,2,1,1,2,2,2,1,1],
+                          [1,2,1,1,2,2,2,1,1],
+                          [1,2,1,1,2,2,2,1,1],
+                          [1,2,1,1,2,2,2,1,1],
+                          [1,2,1,1,2,2,2,1,1],
+                          [1,2,1,1,2,2,2,1,1],
+                          [1,2,1,1,2,2,2,1,1],
+                          [1,2,1,1,2,2,2,1,1]]
+        
+        game.make_move(1,0)
+        self.assertEqual(game.winner, 0)
         
 
 
