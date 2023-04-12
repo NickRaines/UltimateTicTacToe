@@ -1,5 +1,4 @@
 import copy
-import sys
 import random
 import time
 
@@ -129,7 +128,7 @@ class UTTT:
             UTTT: The new UTTT generated from the given move
 
         """
-        next_game_state = UTTT(copy.deepcopy(self.game_grid), self.simplified_grid, self.active_board, self.valid_moves, self.winner, self.player_turn)
+        next_game_state = UTTT(copy.deepcopy(self.game_grid), copy.deepcopy(self.simplified_grid), self.active_board, self.valid_moves, self.winner, self.player_turn)
         next_game_state.make_move(board, cell)
         return next_game_state
 
@@ -174,46 +173,3 @@ class UTTT:
             if i != 6:
                 rows.append("---------+---------+---------")
         print("\n".join(rows))
-
-    def ai_make_move(self):
-        start_time = time.perf_counter()
-
-        random_index = random.randrange(len(self.valid_moves))
-        board_ai = self.valid_moves[random_index][0]
-        cell_ai = self.valid_moves[random_index][1]
-
-        end_time = time.perf_counter()
-        elapsed_time = end_time - start_time
-
-        self.make_move(board_ai, cell_ai)
-        print("AI has made the move (", board_ai,", ", cell_ai,") in ", elapsed_time, " seconds")
-
-    def user_make_move(self):
-        input_str = input("Make Your Move: ")
-        board, cell = map(int, input_str.split())
-        if(self.make_move(board, cell) is False):
-            print("That move was invalid, please make a valid move")
-
-def game_loop(user_player):
-    game = UTTT()
-    while game.winner == 0:
-        if game.player_turn == user_player:
-            game.user_make_move()
-        else:
-            game.ai_make_move()
-
-        game.print_board()
-        print("\nValid Moves: ", game.valid_moves)
-    
-    if game.winner == -1:
-        print("\nIt's a Tie!")
-    else:
-        print("\nPlayer ", game.winner, " Won!")
-    
-if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        user_player = int(sys.argv[1])
-    else:
-        user_player = 1
-    print('When making your moves input two integers seperated by a space (ie. "1 2")')
-    game_loop(user_player)
