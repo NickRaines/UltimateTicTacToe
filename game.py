@@ -1,14 +1,18 @@
 from uttt_main import UTTT
 import player
 import sys
+from window import Window
 
-def game_loop(player1, player2, printing):
+def game_loop(player1, player2, printing, display_window=False):
     game = UTTT()
+    window = Window(game.game_grid) if display_window else None
     while game.winner == 0:
         if game.player_turn == 1:
             player1.make_move(game)
         else:
             player2.make_move(game)
+        if window:
+            window.update(game.game_grid)
         if printing:
             game.print_board()
             print("\nValid Moves: ", game.valid_moves)
@@ -49,6 +53,6 @@ if __name__ == "__main__":
     winner_dict = {-1: 0, 1: 0, 2: 0}
 
     for i in range(0, 100):
-        winner_dict[game_loop(player1, player2, False)] += 1
+        winner_dict[game_loop(player1, player2, False, display_window=True)] += 1
     
     print(winner_dict)
