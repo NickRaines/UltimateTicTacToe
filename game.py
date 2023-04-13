@@ -50,5 +50,6 @@ if __name__ == "__main__":
 
     for i in range(0, 100):
         winner_dict[game_loop(player1, player2, False)] += 1
+        print("\nGame #", i, " Completed\n")
     
     print(winner_dict)
