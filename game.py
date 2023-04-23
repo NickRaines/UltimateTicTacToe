@@ -34,8 +34,8 @@ def create_players(player1, player2):
             ret.append(player.RandomPlayer())
         elif p == 'player':
             ret.append(player.UserPlayer())
-        elif len(p) > 11 and p[0:11] == 'monte-carlo':
-            ret.append(player.MonteCarloPlayer(int(p[11::])))
+        elif len(p) >= 11 and p[0:11] == 'monte-carlo':
+            ret.append(player.MonteCarloPlayer(int(p[11::]) if len(p[11::]) > 0 else 10))
     return ret
 
 def str2bool(v):
