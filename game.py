@@ -3,17 +3,20 @@ import player
 import sys
 from window import Window
 import argparse
+from player import UserPlayer
 
-def game_loop(player1, player2, printing, display_window=False):
+def game_loop(player1, player2, printing=False, display_window=True, display_delay=100):
     game = UTTT()
-    window = Window(game.game_grid) if display_window else None
+    window = Window(game) if display_window else None
     while game.winner == 0:
         if game.player_turn == 1:
-            player1.make_move(game)
+            player1.make_move(game, window)
         else:
-            player2.make_move(game)
+            player2.make_move(game, window)
         if window:
-            window.update(game.game_grid)
+            window.update(game.game_grid, game.simplified_grid, game.last_move)
+            # Flag to slow down game
+            window.delay(display_delay)
         if printing:
             game.print_board()
             print("\nValid Moves: ", game.valid_moves)
@@ -53,15 +56,19 @@ if __name__ == "__main__":
     parser.add_argument("-p2", dest="player2", default="random")
     parser.add_argument("-window", dest="display_window", default="True", help="whether or not the game will run with a gui")
     parser.add_argument("-games", dest="game_count", default="1")
+    parser.add_argument("-delay", dest="delay", default="100")
 
     args = parser.parse_args()
 
     player1, player2 = create_players(args.player1, args.player2)
-    print('When making your moves input two integers seperated by a space (ie. "1 2")')
 
-    winner_dict = {-1: 0, 1: 0, 2: 0}
-
-    for i in range(0, int(args.game_count)):
-        winner_dict[game_loop(player1, player2, False, display_window=str2bool(args.display_window))] += 1
-    
-    print(winner_dict)
+    # Handle AI Multiple Games
+    if not isinstance(player1, UserPlayer) and not isinstance(player2, UserPlayer):
+        winner_dict = {-1: 0, 1: 0, 2: 0}
+        for i in range(0, int(args.game_count)):
+            winner_dict[game_loop(player1, player2, False, display_window=str2bool(args.display_window), display_delay=0)] += 1
+        print(winner_dict)   
+    # Human Game
+    else:
+        winner = game_loop(player1, player2, False, display_window=str2bool(args.display_window), display_delay=str2bool(args.display_window))
+        print(f"Winner: Player {winner}")

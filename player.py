@@ -2,6 +2,7 @@ from uttt_main import UTTT
 import random
 import time
 import copy
+from window import Window
 
 class Player:
 
@@ -10,8 +11,10 @@ class Player:
 
 
 class RandomPlayer(Player):
-   
-    def make_move(self, state: UTTT):
+    def __init__(self, index=0):
+        self.index = index
+
+    def make_move(self, state: UTTT, window=None):
         start_time = time.perf_counter()
 
         random_index = random.randrange(len(state.valid_moves))
@@ -23,20 +26,29 @@ class RandomPlayer(Player):
 
         state.make_move(board_ai, cell_ai)
         print("Random AI has made the move (", board_ai,", ", cell_ai,") in ", elapsed_time, " seconds")
+        return board_ai, cell_ai
 
 
 class UserPlayer(Player):
-    def make_move(self, state: UTTT):
-        input_str = input("Make Your Move: ")
-        board, cell = map(int, input_str.split())
-        if(state.make_move(board, cell) is False):
-            print("That move was invalid, please make a valid move")
+    def make_move(self, state: UTTT, window=None, terminal=False):
+        if terminal:
+            input_str = input("Make Your Move: ")
+            board, cell = map(int, input_str.split())
+            if(state.make_move(board, cell) is False):
+                print("That move was invalid, please make a valid move")
+        # window move
+        else:
+            board, cell = window.make_move()
+            if(state.make_move(board, cell) is False):
+                print("That move was invalid, please make a valid move")
+        return board, cell
+
 
 class MonteCarloPlayer(Player):
     def __init__(self, sim_count):
         self.sim_count = sim_count
 
-    def make_move(self, state: UTTT):
+    def make_move(self, state: UTTT, window=None):
         start_time = time.perf_counter()
 
         simulation_scores = self.simulate_games(state)
@@ -49,6 +61,7 @@ class MonteCarloPlayer(Player):
 
         state.make_move(board_ai, cell_ai)
         print("Monte Carlo AI has made the move (", board_ai,", ", cell_ai,") in ", elapsed_time, " seconds")
+        return board_ai, cell_ai
 
     def simulate_games(self, state: UTTT):
         possible_moves = state.valid_moves

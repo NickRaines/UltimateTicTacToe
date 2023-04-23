@@ -37,6 +37,8 @@ class UTTT:
         else:
             self.valid_moves = valid_moves
 
+        self.last_move = None
+
         
         # I want to make valid_moves live in the object and get updated in make_move()
         
@@ -109,7 +111,9 @@ class UTTT:
             self.player_turn = 3 - self.player_turn
 
             self.valid_moves = self.get_valid_moves()
-            return True
+            self.last_move = board, cell
+
+            return True, 
         return False
     
 
