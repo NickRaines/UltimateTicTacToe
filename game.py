@@ -2,6 +2,7 @@ from uttt_main import UTTT
 import player
 import sys
 from window import Window
+import argparse
 
 def game_loop(player1, player2, printing, display_window=False):
     game = UTTT()
@@ -30,29 +31,37 @@ def create_players(player1, player2):
             ret.append(player.RandomPlayer())
         elif p == 'player':
             ret.append(player.UserPlayer())
-        elif p == 'monte-carlo':
-            ret.append(player.MonteCarloPlayer())
+        elif len(p) > 11 and p[0:11] == 'monte-carlo':
+            ret.append(player.MonteCarloPlayer(int(p[11::])))
     return ret
+
+def str2bool(v):
+  return v.lower() in ("yes", "true", "t", "1")
+
+
 if __name__ == "__main__":
     # run this file with 2 arguments to select the agent type of the first and second player
     # options are:
     #   player -> human player, will input commands to the command line on their turn
     #   random -> random AI agent. Will randomly select a legal move on its turn
-    #   monte-carlo -> monte carlo decision tree AI agent. Will run random simulations to determine its next move on its turn
+    #   monte-carlo## -> monte carlo decision tree AI agent. Will run random simulations to determine its next move on its turn
+    #       add number to the end to determine the number of sims to run. e.g., monte-carlo10 for 10 simulations per move
     #
 
-    if len(sys.argv) == 3:
-        p1 = sys.argv[1]
-        p2 = sys.argv[2]
-    else:
-        p1 = 'random'
-        p2 = 'random'
-    player1, player2 = create_players(p1, p2)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p1", dest="player1", default="random")
+    parser.add_argument("-p2", dest="player2", default="random")
+    parser.add_argument("-window", dest="display_window", default="True", help="whether or not the game will run with a gui")
+    parser.add_argument("-games", dest="game_count", default="1")
+
+    args = parser.parse_args()
+
+    player1, player2 = create_players(args.player1, args.player2)
     print('When making your moves input two integers seperated by a space (ie. "1 2")')
 
     winner_dict = {-1: 0, 1: 0, 2: 0}
 
-    for i in range(0, 100):
-        winner_dict[game_loop(player1, player2, False, display_window=True)] += 1
+    for i in range(0, int(args.game_count)):
+        winner_dict[game_loop(player1, player2, False, display_window=str2bool(args.display_window))] += 1
     
     print(winner_dict)

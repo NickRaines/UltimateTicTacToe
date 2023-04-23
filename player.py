@@ -4,17 +4,13 @@ import time
 import copy
 
 class Player:
-    def __init__(self, index=0):
-        self.index = index
 
     def make_move(self, state: UTTT):
         return
 
 
 class RandomPlayer(Player):
-    def __init__(self, index=0):
-        self.index = index
-
+   
     def make_move(self, state: UTTT):
         start_time = time.perf_counter()
 
@@ -37,13 +33,13 @@ class UserPlayer(Player):
             print("That move was invalid, please make a valid move")
 
 class MonteCarloPlayer(Player):
-    def __init__(self, index=0):
-        self.index = index
+    def __init__(self, sim_count):
+        self.sim_count = sim_count
 
     def make_move(self, state: UTTT):
         start_time = time.perf_counter()
 
-        simulation_scores = MonteCarloPlayer.simulate_games(state, 25)
+        simulation_scores = self.simulate_games(state)
         index_choice = simulation_scores.index(max(simulation_scores))
         board_ai = state.valid_moves[index_choice][0]
         cell_ai = state.valid_moves[index_choice][1]
@@ -54,12 +50,12 @@ class MonteCarloPlayer(Player):
         state.make_move(board_ai, cell_ai)
         print("Monte Carlo AI has made the move (", board_ai,", ", cell_ai,") in ", elapsed_time, " seconds")
 
-    def simulate_games(state: UTTT, simulation_count: int):
+    def simulate_games(self, state: UTTT):
         possible_moves = state.valid_moves
 
         games = [0] * len(possible_moves)
         for i in range(len(possible_moves)):
-            for _ in range(simulation_count):
+            for _ in range(self.sim_count):
                 temp_game = state.generate_next_uttt(possible_moves[i][0], possible_moves[i][1])
                 games[i] += MonteCarloPlayer.run_simulation(temp_game)
         return games
