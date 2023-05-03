@@ -21,6 +21,7 @@ class UTTT:
         self.active_board = active_board
         self.winner = winner
         self.player_turn = player_turn
+        self.finished = 0
 
         if game_grid is None:
             self.game_grid = [[0] * 9 for _ in range(9)]

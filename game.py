@@ -34,6 +34,8 @@ def create_players(player1, player2):
             ret.append(player.RandomPlayer())
         elif p == 'player':
             ret.append(player.UserPlayer())
+        elif p == 'minimax':
+            ret.append(player.MiniMaxPlayer(5, len(ret) + 1))
         elif len(p) >= 11 and p[0:11] == 'monte-carlo':
             ret.append(player.MonteCarloPlayer(int(p[11::]) if len(p[11::]) > 0 else 10))
     return ret
@@ -66,7 +68,7 @@ if __name__ == "__main__":
     if not isinstance(player1, UserPlayer) and not isinstance(player2, UserPlayer):
         winner_dict = {-1: 0, 1: 0, 2: 0}
         for i in range(0, int(args.game_count)):
-            winner_dict[game_loop(player1, player2, False, display_window=str2bool(args.display_window), display_delay=0)] += 1
+            winner_dict[game_loop(player1, player2, False, display_window=str2bool(args.display_window), display_delay=100)] += 1
         print(winner_dict)   
     # Human Game
     else:
